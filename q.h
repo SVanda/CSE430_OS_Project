@@ -24,58 +24,74 @@ typedef struct Qelement
 class Queue{
 	private:
 		struct Qelement *head;
-		int numElements; // in case needing to keep track
+		int numElements = 0;
+
+		void AddQueue(struct Qelement *head, struct Qelement *item);
+		Qelement* DelQueue(struct Qelement *head);
+		void RotateQ(struct Qelement *head);
 	public:
-		Qelement* NewItem();
-		void InitQueue(&head);
-		void AddQueue(&head, item);
-		Qelement* DelQueue(&head);
-		void RotateQ(&head);
+		Qelement* NewItem(int payload);
+		Qelement* DeleteItem();
+		void InitQueue(struct Qelement *head);
 };
 
 /*returns a pointer to a new qelement*/
-Qelement* Queue::NewItem()
+Qelement* Queue::NewItem(int payload)
 {
 	Qelement *new_item;
 	new_item = (struct qelement *)malloc(sizeof(struct qelement));
-	new_item->payload = 0; //user input??
-	new_item->next = NULL;
-	new_item->previous = NULL;
+
+	new_item->payload = this.payload;
+
+	if (numElements == 0) { //first Queue element added
+		head = new_item;
+		InitQueue(head);
+	} else
+		AddQueue(head, new_item);
+
+	numElements ++;
 
 	return new_item;
+}
+
+/*returns a pointer to deleted node*/
+Qelement* Queue::DeleteItem()
+{
+	DelQueue(head);
 }
 
 /*creates an empty queue, pointed to by the variable head*/
 void Queue::InitQueue(struct Qelement *head)
 {
-	head = NewItem();
-	head = this.head;
 	head->next = NULL:
 	head->previous = NULL;
-	head->numElements = 0;
 }
 
 /*adds a queue item pointed to by "item" to the queue pointed to by head*/
 void Queue::AddQueue(struct Qelement *head, struct Qelement *item)
 {
-	Struct Qelement *item, *temp;
-	item = NewItem();
-	item = this.item;
-	//InitQueue(&head);
-	
 	head->next = item;
-	
+	item->previous = head;
+	head = item;
 }
 
 /*deletes an item from head and returns a pointer to the deleted item*/
 Qelement* Queue::DelQueue(&head)
 {
+	Qelement *deleteNode;
 
+	deleteNode = head;
+	/* assuming rotating clockwise */
+	head = deleteNode->next;
+
+	deleteNode->previous = deleteNode->previous->previous;
+	deleteNode->previous->next = deleteNode->next;
+	deleteNode->next->previous = deleteNode->previous;
 }
 
 /*moves the head pointer to the next element in the queue*/
 void Queue::RotateQ(&head)
 {
-
+	head = head.next;
 }
 
