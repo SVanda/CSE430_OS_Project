@@ -6,12 +6,17 @@
  * Sydney Vanda and Brittney Russell
  *
  ***********************************************/
+
+#include <stdio.h>
+#include <stdlib.h>
 #include "q.h"
 
-void main()
+int main()
 {
 	int selection = 0;
 	int data = 0;
+
+	Queue *qu = new Queue();
 
 	printf("Queue Test\n\n");
 	printf("1. Add Element\n 2. Delete Element\n 3. Rotate Head\n 4. Print Queue\n");
@@ -24,20 +29,24 @@ void main()
 	case 1:
 		printf("Data to add: \n");
 		scanf("%d\n", data);
-		Queue::NewItem(data);
+		qu->NewItem(data);
 
 	case 2:
 		printf("Delete Item.\n");
-		Queue::DeleteItem();
+		qu->DeleteItem();
 
 	case 3:
 		printf("Rotate Head.\n");
-		Queue::RotateHead();
+		qu->RotateHead();
 
 	case 4:
 		printf("Printing Queue.");
-		Queue::PrintQueue();
+		qu->PrintQueue();
 
+	case 5:
+		printf("Delete Queue.");
+		delete(qu);
 
 	}
+
 }
