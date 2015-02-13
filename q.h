@@ -49,15 +49,23 @@ Qelement* Queue::NewItem(int payload)
 	} else
 		AddQueue(head, new_item);
 
-	numElements ++;
+	numElements++;
+
+	PrintQueue();
 
 	return new_item;
 }
 
-/*returns a pointer to deleted node*/
 Qelement* Queue::DeleteItem()
 {
 	DelQueue(head);
+	PrintQueue();
+}
+
+Qelement* Queue::RotateHead()
+{
+	RotateQ(head);
+	PrintQueue();
 }
 
 /*creates an empty queue, pointed to by the variable head*/
@@ -95,3 +103,15 @@ void Queue::RotateQ(&head)
 	head = head.next;
 }
 
+
+void Queue::PrintQueue()
+{
+	struct Qelement *temp;
+	temp = head;
+
+	for (int i = 0; i < numElements; i++) {
+		printf("Item %d = %d", i+1, temp->next->payload);
+		printf("\n");
+		temp = temp->next;
+	}
+}
