@@ -25,6 +25,7 @@ struct Qelement
 class Queue{
 	private:
 		struct Qelement *head;
+		struct Qelement *first;
 		int numElements;
 	public:
 		Queue();
@@ -48,7 +49,7 @@ Queue::Queue()
 Qelement* Queue::NewItem(int payload)
 {
 	Qelement *new_item;
-	cout << "In NewItem()";
+	cout << "In NewItem()\n";
 	new_item = (struct Qelement *)malloc(sizeof(struct Qelement));
 
 	new_item->payload = payload;
@@ -83,15 +84,21 @@ void Queue::RotateHead()
 /*creates an empty queue, pointed to by the variable head*/
 void Queue::InitQueue(struct Qelement *head)
 {
-	head->next = NULL;
-	head->previous = NULL;
+	head->next = head;
+	head->previous = head;
+
+	first = head;
 }
 
 /*adds a queue item pointed to by "item" to the queue pointed to by head*/
 void Queue::AddQueue(struct Qelement *head, struct Qelement *item)
 {
-	head->next = item;
+	item->next = head -> next;
 	item->previous = head;
+
+	head->next->previous = item;
+	head->next = item;
+
 	head = item;
 }
 
@@ -103,6 +110,7 @@ Qelement* Queue::DelQueue(struct Qelement *head)
 	deleteNode = head;
 	/* assuming rotating clockwise */
 	head = deleteNode->next;
+
 
 	deleteNode->previous = deleteNode->previous->previous;
 	deleteNode->previous->next = deleteNode->next;
@@ -124,7 +132,7 @@ void Queue::PrintQueue()
 	temp = head;
 
 	for (int i = 0; i < numElements; i++) {
-		printf("Item %d = %d", i+1, temp->next->payload);
+		printf("Item %d = %d", i+1, temp->payload);
 		printf("\n");
 		temp = temp->next;
 	}

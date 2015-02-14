@@ -23,42 +23,49 @@ int main()
 	Queue qu;
 	struct Qelement *newElem;
 
+	while(selection != 5)
+	{
 	printf("Queue Test\n");
-	printf("\n1. Add Element\n 2. Delete Element\n 3. Rotate Head\n 4. Print Queue\n");
+	printf("1. Add Element\n 2. Delete Element\n 3. Rotate Head\n 4. Print Queue\n 5. Quit\n");
 
 	printf("What option are you selecting?");
 	cin >> selection;
 	cin.ignore(20, '\n');
-	cout << selection;
 
-	switch(selection)
-	{
-	case 1:
-		cout << "Data to add: \n";
-		cin >> data;
-		cin.ignore(20, '\n');
-		cout << data;
-		newElem = qu.NewItem(data);
-		break;
 
-	case 2:
-		printf("Delete Item.\n");
-		qu.DeleteItem();
-		break;
+		switch(selection)
+		{
+		case 1:
+			cout << "Data to add: \n";
+			cin >> data;
+			cin.ignore(20, '\n');
 
-	case 3:
-		printf("Rotate Head.\n");
-		qu.RotateHead();
-		break;
+			newElem = qu.NewItem(data);
+			break;
 
-	case 4:
-		printf("Printing Queue.");
-		qu.PrintQueue();
-		break;
+		case 2:
+			printf("Delete Item.\n");
+			qu.DeleteItem();
+			break;
 
-	default:
-		cout << "Not reaching case!\n";
-		break;
+		case 3:
+			printf("Rotate Head.\n");
+			qu.RotateHead();
+			break;
+
+		case 4:
+			printf("Printing Queue.\n");
+			qu.PrintQueue();
+			break;
+
+		case 5:
+			printf("Bye!");
+			return -1;
+
+		default:
+			cout << "Not reaching case!\n";
+			break;
+		}
 	}
 
 }
