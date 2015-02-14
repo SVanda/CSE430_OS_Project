@@ -10,10 +10,11 @@ Sydney Vanda and Brittney Russell
 //double linked list = right side pointer points to the next node address and left side pointer
 //points to the previous node address 
 
+#include <iostream>
+#include <string>
+#include <iomanip>
 
-#include <stdio.h>
-#include <stdlib.h>
-
+using namespace std;
 struct Qelement
 {
 	int payload;
@@ -25,10 +26,6 @@ class Queue{
 	private:
 		struct Qelement *head;
 		int numElements;
-
-		void AddQueue(struct Qelement *head, struct Qelement *item);
-		Qelement* DelQueue(struct Qelement *head);
-		void RotateQ(struct Qelement *head);
 	public:
 		Queue();
 		Qelement* NewItem(int payload);
@@ -36,6 +33,9 @@ class Queue{
 		void RotateHead();
 		void InitQueue(struct Qelement *head);
 		void PrintQueue();
+		void AddQueue(struct Qelement *head, struct Qelement *item);
+		Qelement* DelQueue(struct Qelement *head);
+		void RotateQ(struct Qelement *head);
 };
 
 /* Constructor */
@@ -48,6 +48,7 @@ Queue::Queue()
 Qelement* Queue::NewItem(int payload)
 {
 	Qelement *new_item;
+	cout << "In NewItem()";
 	new_item = (struct Qelement *)malloc(sizeof(struct Qelement));
 
 	new_item->payload = payload;

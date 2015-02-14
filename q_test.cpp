@@ -7,46 +7,58 @@
  *
  ***********************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "q.h"
+#include <iostream>
+#include <string>
+#include <iomanip>
+
+using namespace std;
 
 int main()
 {
 	int selection = 0;
 	int data = 0;
 
-	Queue *qu = new Queue();
+	//Queue *qu = new Queue;
+	Queue qu;
+	struct Qelement *newElem;
 
-	printf("Queue Test\n\n");
-	printf("1. Add Element\n 2. Delete Element\n 3. Rotate Head\n 4. Print Queue\n");
+	printf("Queue Test\n");
+	printf("\n1. Add Element\n 2. Delete Element\n 3. Rotate Head\n 4. Print Queue\n");
 
 	printf("What option are you selecting?");
-	scanf("%d", selection);
+	cin >> selection;
+	cin.ignore(20, '\n');
+	cout << selection;
 
 	switch(selection)
 	{
 	case 1:
-		printf("Data to add: \n");
-		scanf("%d\n", data);
-		qu->NewItem(data);
+		cout << "Data to add: \n";
+		cin >> data;
+		cin.ignore(20, '\n');
+		cout << data;
+		newElem = qu.NewItem(data);
+		break;
 
 	case 2:
 		printf("Delete Item.\n");
-		qu->DeleteItem();
+		qu.DeleteItem();
+		break;
 
 	case 3:
 		printf("Rotate Head.\n");
-		qu->RotateHead();
+		qu.RotateHead();
+		break;
 
 	case 4:
 		printf("Printing Queue.");
-		qu->PrintQueue();
+		qu.PrintQueue();
+		break;
 
-	case 5:
-		printf("Delete Queue.");
-		delete(qu);
-
+	default:
+		cout << "Not reaching case!\n";
+		break;
 	}
 
 }
