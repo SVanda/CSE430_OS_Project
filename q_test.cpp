@@ -25,10 +25,10 @@ int main()
 
 	while(selection != 5)
 	{
-	printf("Queue Test\n");
-	printf("1. Add Element\n 2. Delete Element\n 3. Rotate Head\n 4. Print Queue\n 5. Quit\n");
+	cout << "Queue Test\n";
+	cout << " 1. Add Element\n 2. Delete Element\n 3. Rotate Head\n 4. Print Queue\n 5. Quit\n";
 
-	printf("What option are you selecting?");
+	cout << "Select Menu Option: ";
 	cin >> selection;
 	cin.ignore(20, '\n');
 
@@ -36,7 +36,7 @@ int main()
 		switch(selection)
 		{
 		case 1:
-			cout << "Data to add: \n";
+			cout << "Data to add: ";
 			cin >> data;
 			cin.ignore(20, '\n');
 
@@ -44,27 +44,27 @@ int main()
 			break;
 
 		case 2:
-			printf("Delete Item.\n");
+			cout << "Delete Item.\n";
 			qu.DeleteItem();
 			break;
 
 		case 3:
-			printf("Rotate Head.\n");
+			cout << "Rotate Head.\n";
 			qu.RotateHead();
 			break;
 
 		case 4:
-			printf("Printing Queue.\n");
+			cout << "Printing Queue.\n";
 			qu.PrintQueue();
 			break;
 
 		case 5:
-			printf("Bye!");
+			cout << "Bye!\n";
 			return -1;
 
 		default:
 			cout << "Not reaching case!\n";
-			break;
+			return -1;
 		}
 	}
 
