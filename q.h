@@ -92,26 +92,28 @@ void Queue::InitQueue(struct Qelement *head)
 }
 
 /*adds a queue item pointed to by "item" to the queue pointed to by head*/
-void Queue::AddQueue(struct Qelement *temp, struct Qelement *item)
+void Queue::AddQueue(struct Qelement *tempHead, struct Qelement *item)
 {
-	temp->next = item;
+	tempHead->next = item;
 	item->next = head;
-	item->previous = temp; 
+	item->previous = tempHead; 
 }
 
 /*deletes an item from head and returns a pointer to the deleted item*/
-Qelement* Queue::DelQueue(struct Qelement *head)
+Qelement* Queue::DelQueue(struct Qelement *tempHead)
 {
 	Qelement *deleteNode;
 
-	deleteNode = head;
+	deleteNode = tempHead;
 	/* assuming rotating clockwise */
 	head = deleteNode->next;
-
-
-	deleteNode->previous = deleteNode->previous->previous;
 	deleteNode->previous->next = deleteNode->next;
-	deleteNode->next->previous = deleteNode->previous;
+	(deleteNode->next)->previous = deleteNode->previous;
+	
+
+	//deleteNode->previous = deleteNode->previous->previous;
+	//deleteNode->previous->next = deleteNode->next;
+	//deleteNode->next->previous = deleteNode->previous;
 
 	return deleteNode;
 }
