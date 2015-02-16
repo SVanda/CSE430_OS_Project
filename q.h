@@ -96,7 +96,8 @@ void Queue::AddQueue(struct Qelement *tempHead, struct Qelement *item)
 {
 	tempHead->next = item;
 	item->next = head;
-	item->previous = tempHead; 
+	item->previous = tempHead;
+	head->previous = item; 
 }
 
 /*deletes an item from head and returns a pointer to the deleted item*/
@@ -107,19 +108,20 @@ Qelement* Queue::DelQueue(struct Qelement *tempHead)
 	deleteNode = tempHead;
 	/* assuming rotating clockwise */
 	head = deleteNode->next;
-	deleteNode->previous->next = deleteNode->next;
+	(deleteNode->previous)->next = deleteNode->next;
 	(deleteNode->next)->previous = deleteNode->previous;
 	
-
+	delete deleteNode;
 	//deleteNode->previous = deleteNode->previous->previous;
 	//deleteNode->previous->next = deleteNode->next;
 	//deleteNode->next->previous = deleteNode->previous;
+	numElements--;
 
 	return deleteNode;
 }
 
 /*moves the head pointer to the next element in the queue*/
-void Queue::RotateQ(struct Qelement *head)
+void Queue::RotateQ(struct Qelement *tempHead)
 {
 	head = head->next;
 }
@@ -129,6 +131,8 @@ void Queue::PrintQueue()
 {
 	struct Qelement *temp;
 	temp = head;
+
+	cout << "Head = " << head->payload << "\n";
 
 	for (int i = 0; i < numElements; i++) {
 		cout << "Item " << i+1 << " = " << temp->payload << "\n";
