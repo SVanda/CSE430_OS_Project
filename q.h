@@ -1,18 +1,31 @@
-/*
-Operating Systems CSE 430 
-Project 1 - functions for a queues as doubly linked, circular lists
-Sydney Vanda and Brittney Russell
-2/10/15
-*/
-
-//circular queue to solve re-buffering for dequeue operation, FIFO, both front and rear
-//pointers point to the beginnning of the array but still added to rear and deleted from front
-//double linked list = right side pointer points to the next node address and left side pointer
-//points to the previous node address 
+/************************************************
+ * Operating Systems CSE 430
+ * Project 1 - Circular doubly linked list
+ *
+ * Copyright (c) 2015
+ *      Sydney Vanda
+ *      Brittney RUssell
+ *
+ *  Module Name:
+ *      \file q.h
+ *
+ *  Description:
+ *      \brief Queue processing logic
+ *
+ *
+ * circular queue to solve re-buffering for dequeue operation, FIFO, both front
+ * and rear pointers point to the beginnning of the array but still
+ * added to rear and deleted from front double linked list = right side pointer
+ * points to the next node address and left side pointer points to the previous
+ * node address
+ *
+ ***********************************************/
 
 #include <iostream>
 #include <string>
 #include <iomanip>
+
+#include "TCB.h"
 
 using namespace std;
 struct Qelement

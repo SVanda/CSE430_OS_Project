@@ -1,9 +1,17 @@
-/**********************************************
- * q_test to test doubly linked circular Queue
- *
+/************************************************
  * Operating Systems CSE 430
- * Project 1 - functions for a queues as doubly linked, circular lists
- * Sydney Vanda and Brittney Russell
+ * Project 1 - Circular doubly linked list
+ *
+ * Copyright (c) 2015
+ *      Sydney Vanda
+ *      Brittney RUssell
+ *
+ *  Module Name:
+ *      \file q_test.cpp
+ *
+ *  Description:
+ *      \brief Queue processing test
+ *
  *
  ***********************************************/
 
