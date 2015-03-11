@@ -26,30 +26,34 @@
 #include <iomanip>
 
 #include "TCB.h"
+#include <ucontext.h>
 
-using namespace std;
-struct Qelement
+//using namespace std;
+
+struct TCB_t
 {
-	int payload;
-	struct Qelement *next;
-	struct Qelement *previous;
+	ucontext_t context;
+	struct TCB_t *next;
+	struct TCB_t *previous;
 };
 
 class Queue{
 	private:
-		struct Qelement *head;
+		struct TCB_t *head;
 		int numElements;
 	public:
 		Queue();
-		Qelement* NewItem(int payload);
+		TCB_t* NewItem(ucontext_t context);
 		void DeleteItem();
 		void RotateHead();
-		void InitQueue(struct Qelement *head);
+		void InitQueue(struct TCB_t *head);
 		void PrintQueue();
-		void AddQueue(struct Qelement *head, struct Qelement *item);
-		Qelement* DelQueue(struct Qelement *head);
-		void RotateQ(struct Qelement *head);
+		void AddQueue(struct TCB_t *head, struct TCB_t *item);
+		TCB_t* DelQueue(struct TCB_t *head);
+		void RotateQ(struct TCB_t *head);
 };
+
+Queue RunQ; // global Queue to be used
 
 /* Constructor */
 Queue::Queue()
@@ -58,12 +62,12 @@ Queue::Queue()
 }
 
 /*returns a pointer to a new qelement*/
-Qelement* Queue::NewItem(int payload)
+TCB_t* Queue::NewItem(ucontext_t context)
 {
-	Qelement *new_item, *temp;
-	new_item = new Qelement;
+	TCB_t *new_item, *temp;
+	new_item = new TCB_t;
 
-	new_item->payload = payload;
+	new_item->context = context;
 
 	if (numElements == 0) { //first Queue element added
 		head = new_item;
@@ -85,7 +89,7 @@ Qelement* Queue::NewItem(int payload)
 
 void Queue::DeleteItem()
 {
-	struct Qelement *d_node;
+	struct TCB_t *d_node;
 
 	d_node = DelQueue(head);
 	PrintQueue();
@@ -98,14 +102,14 @@ void Queue::RotateHead()
 }
 
 /*creates an empty queue, pointed to by the variable head*/
-void Queue::InitQueue(struct Qelement *head)
+void Queue::InitQueue(struct TCB_t *head)
 {
 	head->next = NULL;
 	head->previous = NULL;
 }
 
 /*adds a queue item pointed to by "item" to the queue pointed to by head*/
-void Queue::AddQueue(struct Qelement *tempHead, struct Qelement *item)
+void Queue::AddQueue(struct TCB_t *tempHead, struct TCB_t *item)
 {
 	tempHead->next = item;
 	item->next = head;
@@ -114,9 +118,9 @@ void Queue::AddQueue(struct Qelement *tempHead, struct Qelement *item)
 }
 
 /*deletes an item from head and returns a pointer to the deleted item*/
-Qelement* Queue::DelQueue(struct Qelement *tempHead)
+TCB_t* Queue::DelQueue(struct TCB_t *tempHead)
 {
-	Qelement *deleteNode;
+	TCB_t *deleteNode;
 
 	deleteNode = tempHead;
 	/* assuming rotating clockwise */
@@ -134,21 +138,20 @@ Qelement* Queue::DelQueue(struct Qelement *tempHead)
 }
 
 /*moves the head pointer to the next element in the queue*/
-void Queue::RotateQ(struct Qelement *tempHead)
+void Queue::RotateQ(struct TCB_t *tempHead)
 {
 	head = head->next;
 }
 
-
 void Queue::PrintQueue()
 {
-	struct Qelement *temp;
+	struct TCB_t *temp;
 	temp = head;
 
-	cout << "Head = " << head->payload << "\n";
+	cout << "Head = " << head->context << "\n";
 
 	for (int i = 0; i < numElements; i++) {
-		cout << "Item " << i+1 << " = " << temp->payload << "\n";
+		cout << "Item " << i+1 << " = " << temp->context << "\n";
 		temp = temp->next;
 	}
 }
