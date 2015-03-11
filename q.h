@@ -21,9 +21,10 @@
  *
  ***********************************************/
 
-#include <iostream>
-#include <string>
-#include <iomanip>
+#include <stdio.h>
+//#include <iostream>
+//#include <string>
+//#include <iomanip>
 
 #include "TCB.h"
 #include <ucontext.h>
@@ -39,10 +40,10 @@ struct TCB_t
 
 class Queue{
 	private:
-		struct TCB_t *head;
 		int numElements;
 	public:
 		Queue();
+		struct TCB_t *head;
 		TCB_t* NewItem(ucontext_t context);
 		void DeleteItem();
 		void RotateHead();
@@ -148,10 +149,10 @@ void Queue::PrintQueue()
 	struct TCB_t *temp;
 	temp = head;
 
-	cout << "Head = " << head->context << "\n";
+	printf("Head = %x\n", head->context.uc_mcontext);
 
 	for (int i = 0; i < numElements; i++) {
-		cout << "Item " << i+1 << " = " << temp->context << "\n";
+		printf("Item %d = %x\n", i+1, temp->context.uc_mcontext);
 		temp = temp->next;
 	}
 }

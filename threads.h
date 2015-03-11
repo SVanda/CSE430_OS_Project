@@ -20,6 +20,7 @@
 #define THREADS_H_
 
 #include "q.h"
+#include <ucontext.h>
 
 void start_thread(void (*function)(void), TCB_t *TCB);
 void run();
@@ -51,7 +52,7 @@ void run()
 {  
 	ucontext_t parent;     // get a place to store the main context, for faking
 	getcontext(&parent);   // magic sauce
-	swapcontext(&parent, &(RunQ->conext));  // start the first thread
+	swapcontext(&parent, &(RunQ.head->context));  // start the first thread
 }
 
 void yield() // similar to run

@@ -16,7 +16,9 @@
  ***********************************************/
 #ifndef _TCB_H_
 #define _TCB_H_
+#include "q.h"
 
+void init_TCB(TCB_t *tcb, void *functionPointer, void *stackPointer, int stackSize);
 /************************************************
 * There is a routine in the tcb.h file called init_TCB,
 * which is used to initialize a TCB for a new thread. The arguments to init_TCB are:
