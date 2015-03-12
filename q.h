@@ -22,137 +22,169 @@
  ***********************************************/
 
 #include <stdio.h>
-//#include <iostream>
-//#include <string>
-//#include <iomanip>
+#include <stdlib.h>
+//#include "TCB.h"
 
-#include "TCB.h"
-#include <ucontext.h>
-
-//using namespace std;
-
-struct TCB_t
+struct Qelement
 {
-	ucontext_t context;
-	struct TCB_t *next;
-	struct TCB_t *previous;
+	int context;
+	struct Qelement *next;
+	struct Qelement *previous;
 };
 
-class Queue{
-	private:
-		int numElements;
-	public:
-		Queue();
-		struct TCB_t *head;
-		TCB_t* NewItem(ucontext_t context);
-		void DeleteItem();
-		void RotateHead();
-		void InitQueue(struct TCB_t *head);
-		void PrintQueue();
-		void AddQueue(struct TCB_t *head, struct TCB_t *item);
-		TCB_t* DelQueue(struct TCB_t *head);
-		void RotateQ(struct TCB_t *head);
-};
+typedef struct _Queue Queue;
 
-Queue RunQ; // global Queue to be used
+// declaration of pointers to funcions
+typedef struct Qelement* (*fptrNewItem)(int context, Queue*);
+typedef void (*fptrDeleteItem)(Queue*);
+typedef	void (*fptrRotateHead)(Queue*);
+typedef	void (*fptrInitQueue)(struct Qelement *head);
+typedef	void (*fptrPrintQueue)(Queue*);
+typedef	void (*fptrAddQueue)(struct Qelement *, struct Qelement *, Queue*);
+typedef	struct Qelement* (*fptrDelQueue)(struct Qelement *, Queue*);
+typedef	void (*fptrRotateQ)(Queue*);
 
-/* Constructor */
-Queue::Queue()
+typedef struct _Queue{
+	int numElements;
+	struct Qelement *head;
+	// interface for function
+	fptrNewItem NewItem;
+	fptrDeleteItem DeleteItem;
+	fptrRotateHead RotateHead;
+	fptrInitQueue InitQueue;
+	fptrPrintQueue PrintQueue;
+	fptrAddQueue AddQueue;
+	fptrDelQueue DelQueue;
+	fptrRotateQ RotateQ;
+}Queue;
+
+// forward declaration of Queue functions
+Queue* new_Queue(); //constructor, sets pointer functions
+struct Qelement* Queue_NewItem(int context, Queue* qu);
+void Queue_DeleteItem(Queue* qu);
+void Queue_RotateHead(Queue* qu);
+void Queue_InitQueue(struct Qelement *head);
+void Queue_PrintQueue(Queue* qu);
+void Queue_AddQueue(struct Qelement *head, struct Qelement *item, Queue* qu);
+struct Qelement* Queue_DelQueue(struct Qelement *head, Queue* qu);
+void Queue_RotateQ(Queue* qu);
+
+
+// function definitions
+/*constructor, sets pointer functions*/
+Queue* new_Queue()
 {
-	numElements = 0;
+	Queue* newQueue;
+	/* setting up queue */
+	newQueue = (Queue*)malloc(sizeof(Queue));
+	newQueue->numElements = 0; //initially set number of elements to 0
+
+	// allow access to Queue functions thru function pointers
+	newQueue->NewItem = Queue_NewItem;
+	newQueue->DeleteItem = Queue_DeleteItem;
+	newQueue->RotateHead = Queue_RotateHead;
+	newQueue->InitQueue = Queue_InitQueue;
+	newQueue->PrintQueue = Queue_PrintQueue;
+	newQueue->AddQueue = Queue_AddQueue;
+	newQueue->DelQueue = Queue_DelQueue;
+	newQueue->RotateQ = Queue_RotateQ;
+
+	return newQueue; //after obj creation can access data members and function similar to C++ class inheritance
 }
 
 /*returns a pointer to a new qelement*/
-TCB_t* Queue::NewItem(ucontext_t context)
+struct Qelement* Queue_NewItem(int context, Queue* qu)
 {
-	TCB_t *new_item, *temp;
-	new_item = new TCB_t;
+	int i;
+	struct Qelement *new_item, *temp;
+	new_item = (struct Qelement *)malloc(sizeof(struct Qelement));
 
 	new_item->context = context;
 
-	if (numElements == 0) { //first Queue element added
-		head = new_item;
-		InitQueue(head);
+	if (qu->numElements == 0) { //first Queue element added
+		qu->head = new_item;
+		qu->InitQueue(qu->head);
 	} else {
-		temp = head;
-		for (int i = 0; i < numElements-1; i++) {
+		temp = qu->head;
+		for (i = 0; i < qu->numElements-1; i++) {
 			temp = temp->next;
 		}
-		AddQueue(temp, new_item);
+		qu->AddQueue(temp, new_item, qu);
 	}
 
-	numElements++;
+	qu->numElements++;
 
-	PrintQueue();
+	qu->PrintQueue(qu);
 
 	return new_item;
 }
 
-void Queue::DeleteItem()
-{
-	struct TCB_t *d_node;
 
-	d_node = DelQueue(head);
-	PrintQueue();
+void Queue_DeleteItem(Queue* qu)
+{
+	struct Qelement *d_node;
+
+	d_node = qu->DelQueue(qu->head, qu);
+	qu->PrintQueue(qu);
 }
 
-void Queue::RotateHead()
+void Queue_RotateHead(Queue* qu)
 {
-	RotateQ(head);
-	PrintQueue();
+	qu->RotateQ(qu);
+	qu->PrintQueue(qu);
 }
 
 /*creates an empty queue, pointed to by the variable head*/
-void Queue::InitQueue(struct TCB_t *head)
+void Queue_InitQueue(struct Qelement *head)
 {
 	head->next = NULL;
 	head->previous = NULL;
 }
 
 /*adds a queue item pointed to by "item" to the queue pointed to by head*/
-void Queue::AddQueue(struct TCB_t *tempHead, struct TCB_t *item)
+void Queue_AddQueue(struct Qelement *tempHead, struct Qelement *item, Queue* qu)
 {
 	tempHead->next = item;
-	item->next = head;
+	item->next = qu->head;
 	item->previous = tempHead;
-	head->previous = item; 
+	qu->head->previous = item; 
 }
 
 /*deletes an item from head and returns a pointer to the deleted item*/
-TCB_t* Queue::DelQueue(struct TCB_t *tempHead)
+struct Qelement* Queue_DelQueue(struct Qelement *tempHead, Queue* qu)
 {
-	TCB_t *deleteNode;
+	struct Qelement *deleteNode;
 
 	deleteNode = tempHead;
 	/* assuming rotating clockwise */
-	head = deleteNode->next;
+	qu->head = deleteNode->next;
 	(deleteNode->previous)->next = deleteNode->next;
 	(deleteNode->next)->previous = deleteNode->previous;
 	
-	delete deleteNode;
-	//deleteNode->previous = deleteNode->previous->previous;
-	//deleteNode->previous->next = deleteNode->next;
-	//deleteNode->next->previous = deleteNode->previous;
-	numElements--;
+	free(deleteNode);
+	qu->numElements--;
 
 	return deleteNode;
 }
 
 /*moves the head pointer to the next element in the queue*/
-void Queue::RotateQ(struct TCB_t *tempHead)
+void Queue_RotateQ(Queue* qu)
 {
-	head = head->next;
+	qu->head = qu->head->next;
 }
 
-void Queue::PrintQueue()
+void Queue_PrintQueue(Queue* qu)
 {
-	struct TCB_t *temp;
-	temp = head;
+	int i;
+	struct Qelement *temp;
+	temp = qu->head;
 
-	printf("Head = %x\n", head->context.uc_mcontext);
+	//printf("Head = %x\n", head->context.uc_mcontext);
+	printf("Head = %d\n", qu->head->context);
 
-	for (int i = 0; i < numElements; i++) {
-		printf("Item %d = %x\n", i+1, temp->context.uc_mcontext);
+	for (i = 0; i < qu->numElements; i++) {
+		//printf("Item %d = %x\n", i+1, temp->context.uc_mcontext);
+		printf("Item %d = %d\n", i+1, temp->context);
 		temp = temp->next;
 	}
 }
