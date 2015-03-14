@@ -19,14 +19,14 @@
 #ifndef THREADS_H_
 #define THREADS_H_
 
+#include <stdlib.h>
 #include "q.h"
-#include <ucontext.h>
 
-void start_thread(void (*function)(void), TCB_t *TCB);
+void start_thread(void (*function)(void));
 void run();
 void yield();
 
-void start_thread(void (*function)(void), TCB_t *TCB)
+void start_thread(void (*function)(void))
 {
 	/*******************************************
 	* begin pseudo code:
@@ -36,30 +36,37 @@ void start_thread(void (*function)(void), TCB_t *TCB)
 	* call addQ to add this TCB into the “RunQ” which is a global header pointer
 	* end pseudo code
 	*******************************************/
-//	TCB_t *TCB;
-	int *stack;
+	struct TCB_t *TCB;
+	int *stack, i;
 	
-	TCB = (TCB_t *)malloc(sizeof(TCB_t));
+	TCB = (struct TCB_t *)malloc(sizeof(struct TCB_t));
 	if(!TCB)
 		printf("Out of Memory! \n");
 
-	stack = (int *)malloc(8192 * sizeof(int)); //stack is an array of 8192 ints
+	stack = (int *)malloc(sizeof(int)*8192); //stack is an array of 8192 ints
+	for(i = 0; i<8192;i++)
+		stack[i] = 0;
+
 	init_TCB(TCB, function, stack, sizeof(stack));
-	RunQ.newItem(TCB->context);
+	RunQ->NewItem(TCB->context);
 }
 
 void run() 
 {  
 	ucontext_t parent;     // get a place to store the main context, for faking
 	getcontext(&parent);   // magic sauce
-	swapcontext(&parent, &(RunQ.head->context));  // start the first thread
+	swapcontext(&parent, &(RunQ->head->context));  // start the first thread
 }
 
 void yield() // similar to run
 {
-	TCB_t thisQueueContext = RunQ->context;
-	RunQ.RotateHead(); //rotate the run Q
-	swapcontext(thisQueue, RunQ->context); //swap the context, from previous thread to the thread pointed to by RunQ
+	ucontext_t *thisContext, *runQContext;
+
+	Queue* thisQueue = RunQ;
+	RunQ->RotateHead(); //rotate the run Q
+	thisContext = &(thisQueue->head->context);
+	runQContext = &(RunQ->head->context);
+	swapcontext(thisContext, runQContext); //swap the context, from previous thread to the thread pointed to by RunQ
 }
 
 #endif /* THREADS_H_ */

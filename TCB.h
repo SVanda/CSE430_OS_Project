@@ -16,9 +16,17 @@
  ***********************************************/
 #ifndef _TCB_H_
 #define _TCB_H_
-#include "q.h"
+#include <ucontext.h>
+#include <string.h>
 
-void init_TCB(TCB_t *tcb, void *functionPointer, void *stackPointer, int stackSize);
+struct TCB_t
+{
+	ucontext_t context;
+	struct TCB_t *next;
+	struct TCB_t *previous;
+};
+
+void init_TCB(struct TCB_t *tcb, void *functionPointer, void *stackPointer, int stackSize);
 /************************************************
 * There is a routine in the tcb.h file called init_TCB,
 * which is used to initialize a TCB for a new thread. The arguments to init_TCB are:
@@ -41,9 +49,9 @@ uc_stack:
 	ss_size = size in bytes of the signal stack that ss_sp points to
 
 ***********************************************/
-void init_TCB(TCB_t *tcb, void *functionPointer, void *stackPointer, int stackSize)
+void init_TCB(struct TCB_t *tcb, void *functionPointer, void *stackPointer, int stackSize)
 {
-	memset(tcb, '\0', sizeof(TCB_t)); 
+	memset(tcb, '\0', sizeof(struct TCB_t)); 
 	getcontext(&tcb->context); // get parent context
 	tcb->context.uc_stack.ss_sp = stackPointer;
 	tcb->context.uc_stack.ss_size = (size_t)stackSize;

@@ -18,15 +18,15 @@
 #include <stdlib.h>
 #include "q.h"
 
+Queue* RunQ; // global Queue
+
 int main()
 {
 	int selection = 0;
 	int data = 0;
+	struct TCB_t *newElem;
 
-	Queue* RunQ; // global Queue
 	RunQ = new_Queue(); // allow RunQ to access all data members and functions of Queue struct
-
-	struct Qelement *newElem;
 
 	while(selection != 5)
 	{
@@ -42,22 +42,22 @@ int main()
 			printf("Data to add: ");
 			scanf("%d", &data);
 
-			newElem = RunQ->NewItem(data, RunQ);
+			newElem = RunQ->NewItem(data);
 			break;
 
 		case 2:
 			printf("Delete Item.\n");
-			RunQ->DeleteItem(RunQ);
+			RunQ->DeleteItem();
 			break;
 
 		case 3:
 			printf("Rotate Head.\n");
-			RunQ->RotateHead(RunQ);
+			RunQ->RotateHead();
 			break;
 
 		case 4:
 			printf("Printing Queue.\n");
-			RunQ->PrintQueue(RunQ);
+			RunQ->PrintQueue();
 			break;
 
 		case 5:

@@ -23,30 +23,23 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include "TCB.h"
-
-struct Qelement
-{
-	int context;
-	struct Qelement *next;
-	struct Qelement *previous;
-};
+#include "TCB.h"
 
 typedef struct _Queue Queue;
 
 // declaration of pointers to funcions
-typedef struct Qelement* (*fptrNewItem)(int context, Queue*);
-typedef void (*fptrDeleteItem)(Queue*);
-typedef	void (*fptrRotateHead)(Queue*);
-typedef	void (*fptrInitQueue)(struct Qelement *head);
-typedef	void (*fptrPrintQueue)(Queue*);
-typedef	void (*fptrAddQueue)(struct Qelement *, struct Qelement *, Queue*);
-typedef	struct Qelement* (*fptrDelQueue)(struct Qelement *, Queue*);
-typedef	void (*fptrRotateQ)(Queue*);
+typedef struct TCB_t* (*fptrNewItem)(ucontext_t context);
+typedef void (*fptrDeleteItem)();
+typedef	void (*fptrRotateHead)();
+typedef	void (*fptrInitQueue)(struct TCB_t *head);
+typedef	void (*fptrPrintQueue)();
+typedef	void (*fptrAddQueue)(struct TCB_t *, struct TCB_t *);
+typedef	struct TCB_t* (*fptrDelQueue)(struct TCB_t *);
+typedef	void (*fptrRotateQ)();
 
 typedef struct _Queue{
 	int numElements;
-	struct Qelement *head;
+	struct TCB_t *head;
 	// interface for function
 	fptrNewItem NewItem;
 	fptrDeleteItem DeleteItem;
@@ -60,15 +53,16 @@ typedef struct _Queue{
 
 // forward declaration of Queue functions
 Queue* new_Queue(); //constructor, sets pointer functions
-struct Qelement* Queue_NewItem(int context, Queue* qu);
-void Queue_DeleteItem(Queue* qu);
-void Queue_RotateHead(Queue* qu);
-void Queue_InitQueue(struct Qelement *head);
-void Queue_PrintQueue(Queue* qu);
-void Queue_AddQueue(struct Qelement *head, struct Qelement *item, Queue* qu);
-struct Qelement* Queue_DelQueue(struct Qelement *head, Queue* qu);
-void Queue_RotateQ(Queue* qu);
+struct TCB_t* Queue_NewItem(ucontext_t context);
+void Queue_DeleteItem();
+void Queue_RotateHead();
+void Queue_InitQueue(struct TCB_t *head);
+void Queue_PrintQueue();
+void Queue_AddQueue(struct TCB_t *head, struct TCB_t *item);
+struct TCB_t* Queue_DelQueue(struct TCB_t *head);
+void Queue_RotateQ();
 
+extern Queue* RunQ; // global Queue
 
 // function definitions
 /*constructor, sets pointer functions*/
@@ -93,98 +87,101 @@ Queue* new_Queue()
 }
 
 /*returns a pointer to a new qelement*/
-struct Qelement* Queue_NewItem(int context, Queue* qu)
+struct TCB_t* Queue_NewItem(ucontext_t context)
 {
 	int i;
-	struct Qelement *new_item, *temp;
-	new_item = (struct Qelement *)malloc(sizeof(struct Qelement));
+	struct TCB_t *new_item, *temp;
+	new_item = (struct TCB_t *)malloc(sizeof(struct TCB_t));
 
 	new_item->context = context;
 
-	if (qu->numElements == 0) { //first Queue element added
-		qu->head = new_item;
-		qu->InitQueue(qu->head);
+	if (RunQ->numElements == 0) { //first Queue element added
+		RunQ->head = new_item;
+		RunQ->InitQueue(RunQ->head);
 	} else {
-		temp = qu->head;
-		for (i = 0; i < qu->numElements-1; i++) {
+		temp = RunQ->head;
+		for (i = 0; i < RunQ->numElements-1; i++) {
 			temp = temp->next;
 		}
-		qu->AddQueue(temp, new_item, qu);
+		RunQ->AddQueue(temp, new_item);
 	}
 
-	qu->numElements++;
+	RunQ->numElements++;
 
-	qu->PrintQueue(qu);
+	RunQ->PrintQueue();
 
 	return new_item;
 }
 
 
-void Queue_DeleteItem(Queue* qu)
+void Queue_DeleteItem()
 {
-	struct Qelement *d_node;
+	struct TCB_t *d_node;
 
-	d_node = qu->DelQueue(qu->head, qu);
-	qu->PrintQueue(qu);
+	d_node = RunQ->DelQueue(RunQ->head);
+	RunQ->PrintQueue();
 }
 
-void Queue_RotateHead(Queue* qu)
+void Queue_RotateHead()
 {
-	qu->RotateQ(qu);
-	qu->PrintQueue(qu);
+	RunQ->RotateQ();
+	RunQ->PrintQueue();
 }
 
 /*creates an empty queue, pointed to by the variable head*/
-void Queue_InitQueue(struct Qelement *head)
+void Queue_InitQueue(struct TCB_t *head)
 {
 	head->next = NULL;
 	head->previous = NULL;
 }
 
 /*adds a queue item pointed to by "item" to the queue pointed to by head*/
-void Queue_AddQueue(struct Qelement *tempHead, struct Qelement *item, Queue* qu)
+void Queue_AddQueue(struct TCB_t *tempHead, struct TCB_t *item)
 {
 	tempHead->next = item;
-	item->next = qu->head;
+	item->next = RunQ->head;
 	item->previous = tempHead;
-	qu->head->previous = item; 
+	RunQ->head->previous = item; 
 }
 
 /*deletes an item from head and returns a pointer to the deleted item*/
-struct Qelement* Queue_DelQueue(struct Qelement *tempHead, Queue* qu)
+struct TCB_t* Queue_DelQueue(struct TCB_t *tempHead)
 {
-	struct Qelement *deleteNode;
+	struct TCB_t *deleteNode;
 
 	deleteNode = tempHead;
 	/* assuming rotating clockwise */
-	qu->head = deleteNode->next;
+	RunQ->head = deleteNode->next;
 	(deleteNode->previous)->next = deleteNode->next;
 	(deleteNode->next)->previous = deleteNode->previous;
 	
 	free(deleteNode);
-	qu->numElements--;
+	RunQ->numElements--;
 
 	return deleteNode;
 }
 
 /*moves the head pointer to the next element in the queue*/
-void Queue_RotateQ(Queue* qu)
+void Queue_RotateQ()
 {
-	qu->head = qu->head->next;
+	if (RunQ->numElements > 1)
+		RunQ->head = RunQ->head->next;
+	else
+		printf("No rotation!\n");
 }
 
-void Queue_PrintQueue(Queue* qu)
+void Queue_PrintQueue()
 {
 	int i;
-	struct Qelement *temp;
-	temp = qu->head;
+	struct TCB_t *temp;
+	temp = RunQ->head;
 
-	//printf("Head = %x\n", head->context.uc_mcontext);
-	printf("Head = %d\n", qu->head->context);
+	printf("Head = %x\n", RunQ->head->context.uc_mcontext);
+	//printf("Head = %d\n", RunQ->head->context);
 
-	for (i = 0; i < qu->numElements; i++) {
-		//printf("Item %d = %x\n", i+1, temp->context.uc_mcontext);
-		printf("Item %d = %d\n", i+1, temp->context);
+	for (i = 0; i < RunQ->numElements; i++) {
+		printf("Item %d = %x\n", i+1, temp->context.uc_mcontext);
+		//printf("Item %d = %d\n", i+1, temp->context);
 		temp = temp->next;
 	}
 }

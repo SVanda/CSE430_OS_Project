@@ -21,72 +21,74 @@
 
 
 #include <stdio.h>
-#include "q.h"
 #include "threads.h"
 
 
 /********************
  * Gobal Variables
  ********************/
-Queue RunQ;
+Queue* RunQ;
 int globalInt = 0;
 
 /********************
  * Function Prototypes
  ********************/
-void f1();
-void f2();
-
-
-int main()
-{
-	struct TCB_t *newTCB;
-
+void function_f1();
+void function_f2();
 	/*************************
 	 * Function Pointers
 	 ************************/
-	void (*f1)();
-	void (*f2)();
+void (*f1)();
+void (*f2)();
+
+int main()
+{
+	RunQ = new_Queue();
+
+	f1 = function_f1;
+	f2 = function_f2;
 
 	/*************************
 	 * Initialize Threads
 	 ************************/
-	start_thread(f1, newTCB);
-	start_thread(f2, newTCB);
-
+	start_thread(f1);
+	start_thread(f2);
 	run();
+	return 0;
 }
 
-void f1()
+void function_f1()
 {
 	int localInt = 0;
 	while(1)
 	{
-		printf("f1 %d", localInt);
+		printf("f1 %d\n", localInt);
 		yield();
 		localInt++;
 
-		printf("f2 %d", localInt);
+		printf("global = %d\n", globalInt);
+		printf("f2 %d\n", localInt);
 		yield();
 
-		sleep();
+		sleep(1);
 	}
 }
 
-void f2()
+void function_f2()
 {
 	int localInt = 0;
 
 	while(1)
 	{
-		printf("f2 %d", localInt);
+		printf("f2 %d\n", localInt);
 		yield();
 		localInt++;
 
-		printf("f1 %d", localInt);
+		printf("global = %d\n", globalInt);
+		printf("f1 %d\n", localInt);
 
 		yield();
 
-		sleep();
+		sleep(1);
 	}
 }
