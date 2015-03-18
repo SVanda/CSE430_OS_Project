@@ -34,7 +34,7 @@ struct Qelement
 
 typedef struct _Queue Queue;
 
-// declaration of pointers to funcions
+// declaration of pointers to functions
 typedef struct Qelement* (*fptrNewItem)(int context, Queue*);
 typedef void (*fptrDeleteItem)(Queue*);
 typedef	void (*fptrRotateHead)(Queue*);
