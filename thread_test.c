@@ -62,36 +62,29 @@ int main()
 
 void function_f1()
 {
-	int localInt = 0, i;
+	int localInt = 0;
+	printf("global = %d\n", globalInt);
 
 	while(1)
 	{
-		//for (i = 0; i < 4; i++) {
-			printf("f1 global = %d\n", globalInt);
-			printf("f1 %d\n", localInt);
-			localInt++;
-		//}
-
-		globalInt++;
+		printf("f1 %d\n", localInt);
+		localInt++;
 
 		sleep(1);
 		yield(); //context switch
+		globalInt++;
+		printf("global = %d\n", globalInt);
 	}
 }
 
 void function_f2()
 {
-	int localInt = 0, i;
+	int localInt = 0;
 
 	while(1)
 	{
-		//for (i = 0; i < 4; i++) {
-			printf("f2 global = %d\n", globalInt);	
-			printf("f2 %d\n", localInt);
-			localInt++;
-		//}
-
-		globalInt++;
+		printf("f2 %d\n", localInt);
+		localInt++;
 
 		sleep(1);
 		yield(); //context switch
@@ -100,17 +93,12 @@ void function_f2()
 
 void function_f3()
 {
-	int localInt = 0, i;
+	int localInt = 0;
 
 	while(1)
 	{
-		//for (i = 0; i < 4; i++) {
-			printf("f3 global = %d\n", globalInt);	
-			printf("f3 %d\n", localInt);
-			localInt++;
-		//}
-
-		globalInt++;
+		printf("f3 %d\n", localInt);
+		localInt++;
 
 		sleep(1);
 		yield(); //context switch
