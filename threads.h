@@ -37,18 +37,16 @@ void start_thread(void (*function)(void))
 	* end pseudo code
 	*******************************************/
 	struct TCB_t *TCB;
-	int *stack, i;
+	void *stack;
 	
 	TCB = (struct TCB_t *)malloc(sizeof(struct TCB_t));
 	if(!TCB)
 		printf("Out of Memory! \n");
 
-	stack = (int *)malloc(sizeof(int)*8192); //stack is an array of 8192 ints
-	for(i = 0; i<8192;i++)
-		stack[i] = 0;
+	stack = malloc(8192); //stack is an array of 8192 ints
 
 	init_TCB(TCB, function, stack, sizeof(stack));
-	RunQ->NewItem(TCB->context);
+	RunQ->NewItem(TCB);
 }
 
 void run() 
@@ -62,9 +60,8 @@ void yield() // similar to run
 {
 	ucontext_t *thisContext, *runQContext;
 
-	Queue* thisQueue = RunQ;
+	thisContext = &(RunQ->head->context);
 	RunQ->RotateHead(); //rotate the run Q
-	thisContext = &(thisQueue->head->context);
 	runQContext = &(RunQ->head->context);
 	swapcontext(thisContext, runQContext); //swap the context, from previous thread to the thread pointed to by RunQ
 }

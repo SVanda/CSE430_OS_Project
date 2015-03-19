@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include "threads.h"
 
-
 /********************
  * Gobal Variables
  ********************/
@@ -35,11 +34,13 @@ int globalInt = 0;
  ********************/
 void function_f1();
 void function_f2();
+void function_f3();
 	/*************************
 	 * Function Pointers
 	 ************************/
 void (*f1)();
 void (*f2)();
+void (*f3)();
 
 int main()
 {
@@ -47,48 +48,71 @@ int main()
 
 	f1 = function_f1;
 	f2 = function_f2;
+	f3 = function_f3;
 
 	/*************************
 	 * Initialize Threads
 	 ************************/
 	start_thread(f1);
 	start_thread(f2);
-	run();
+	start_thread(f3);
+	run(); //starts the first thread
 	return 0;
 }
 
 void function_f1()
 {
-	int localInt = 0;
+	int localInt = 0, i;
+
 	while(1)
 	{
-		printf("f1 %d\n", localInt);
-		yield();
-		localInt++;
+		//for (i = 0; i < 4; i++) {
+			printf("f1 global = %d\n", globalInt);
+			printf("f1 %d\n", localInt);
+			localInt++;
+		//}
 
-		printf("global = %d\n", globalInt);
-		printf("f2 %d\n", localInt);
-		yield();
+		globalInt++;
 
 		sleep(1);
+		yield(); //context switch
 	}
 }
 
 void function_f2()
 {
-	int localInt = 0;
+	int localInt = 0, i;
 
 	while(1)
 	{
-		printf("f2 %d\n", localInt);
-		yield();
-		localInt++;
+		//for (i = 0; i < 4; i++) {
+			printf("f2 global = %d\n", globalInt);	
+			printf("f2 %d\n", localInt);
+			localInt++;
+		//}
 
-		printf("global = %d\n", globalInt);
-		printf("f1 %d\n", localInt);
-
-		yield();
+		globalInt++;
 
 		sleep(1);
+		yield(); //context switch
+	}
+}
+
+void function_f3()
+{
+	int localInt = 0, i;
+
+	while(1)
+	{
+		//for (i = 0; i < 4; i++) {
+			printf("f3 global = %d\n", globalInt);	
+			printf("f3 %d\n", localInt);
+			localInt++;
+		//}
+
+		globalInt++;
+
+		sleep(1);
+		yield(); //context switch
 	}
 }

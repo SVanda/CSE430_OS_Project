@@ -25,13 +25,13 @@
 #include <stdlib.h>
 #include "TCB.h"
 
-typedef struct _Queue Queue;
+//typedef struct _Queue Queue;
 
 // declaration of pointers to funcions
-typedef struct TCB_t* (*fptrNewItem)(ucontext_t context);
+typedef void (*fptrNewItem)(struct TCB_t * /*ucontext_t*/);
 typedef void (*fptrDeleteItem)();
 typedef	void (*fptrRotateHead)();
-typedef	void (*fptrInitQueue)(struct TCB_t *head);
+typedef	void (*fptrInitQueue)();
 typedef	void (*fptrPrintQueue)();
 typedef	void (*fptrAddQueue)(struct TCB_t *, struct TCB_t *);
 typedef	struct TCB_t* (*fptrDelQueue)(struct TCB_t *);
@@ -53,16 +53,18 @@ typedef struct _Queue{
 
 // forward declaration of Queue functions
 Queue* new_Queue(); //constructor, sets pointer functions
-struct TCB_t* Queue_NewItem(ucontext_t context);
+void Queue_NewItem(struct TCB_t *new_item/*ucontext_t context*/);
 void Queue_DeleteItem();
 void Queue_RotateHead();
-void Queue_InitQueue(struct TCB_t *head);
+void Queue_InitQueue();
 void Queue_PrintQueue();
 void Queue_AddQueue(struct TCB_t *head, struct TCB_t *item);
 struct TCB_t* Queue_DelQueue(struct TCB_t *head);
 void Queue_RotateQ();
 
 extern Queue* RunQ; // global Queue
+struct TCB_t *Thread1;
+struct TCB_t *Thread2;
 
 // function definitions
 /*constructor, sets pointer functions*/
@@ -87,30 +89,27 @@ Queue* new_Queue()
 }
 
 /*returns a pointer to a new qelement*/
-struct TCB_t* Queue_NewItem(ucontext_t context)
+void Queue_NewItem(struct TCB_t *new_item/*ucontext_t context*/)
 {
 	int i;
-	struct TCB_t *new_item, *temp;
-	new_item = (struct TCB_t *)malloc(sizeof(struct TCB_t));
-
-	new_item->context = context;
+	struct TCB_t *temp;
 
 	if (RunQ->numElements == 0) { //first Queue element added
 		RunQ->head = new_item;
-		RunQ->InitQueue(RunQ->head);
+		Thread1 = new_item;
+		RunQ->InitQueue();
 	} else {
-		temp = RunQ->head;
-		for (i = 0; i < RunQ->numElements-1; i++) {
-			temp = temp->next;
-		}
+		temp = RunQ->head->previous;
+		//for (i = 0; i < RunQ->numElements-1; i++) {
+		//	temp = temp->next;
+		//}
+		
+		Thread2 = new_item;
 		RunQ->AddQueue(temp, new_item);
 	}
 
 	RunQ->numElements++;
-
 	RunQ->PrintQueue();
-
-	return new_item;
 }
 
 
@@ -129,10 +128,10 @@ void Queue_RotateHead()
 }
 
 /*creates an empty queue, pointed to by the variable head*/
-void Queue_InitQueue(struct TCB_t *head)
+void Queue_InitQueue()
 {
-	head->next = NULL;
-	head->previous = NULL;
+	RunQ->head->next = RunQ->head;
+	RunQ->head->previous = RunQ->head;
 }
 
 /*adds a queue item pointed to by "item" to the queue pointed to by head*/
@@ -176,12 +175,10 @@ void Queue_PrintQueue()
 	struct TCB_t *temp;
 	temp = RunQ->head;
 
-	printf("Head = %x\n", RunQ->head->context.uc_mcontext);
-	//printf("Head = %d\n", RunQ->head->context);
+	printf("Thread Head= %x\n", RunQ->head);
 
 	for (i = 0; i < RunQ->numElements; i++) {
-		printf("Item %d = %x\n", i+1, temp->context.uc_mcontext);
-		//printf("Item %d = %d\n", i+1, temp->context);
+		printf("Item %d = %x\n", i+1, temp);
 		temp = temp->next;
 	}
 }

@@ -53,8 +53,8 @@ void init_TCB(struct TCB_t *tcb, void *functionPointer, void *stackPointer, int 
 {
 	memset(tcb, '\0', sizeof(struct TCB_t)); 
 	getcontext(&tcb->context); // get parent context
-	tcb->context.uc_stack.ss_sp = stackPointer;
-	tcb->context.uc_stack.ss_size = (size_t)stackSize;
+	tcb->context.uc_stack.ss_sp = /*stackPointer*/malloc(8192);
+	tcb->context.uc_stack.ss_size = /*(size_t)stackSize*/8192;
 	makecontext(&tcb->context, functionPointer, 0); 
 }
 
