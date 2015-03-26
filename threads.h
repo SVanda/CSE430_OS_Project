@@ -12,9 +12,6 @@
  *  Description:
  *      \brief Threads processing logic
  *
- *
- *
- *
  ***********************************************/
 #ifndef THREADS_H_
 #define THREADS_H_

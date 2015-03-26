@@ -13,11 +13,12 @@
  *      \brief Queue processing logic
  *
  *
- * circular queue to solve re-buffering for dequeue operation, FIFO, both front
- * and rear pointers point to the beginnning of the array but still
- * added to rear and deleted from front double linked list = right side pointer
- * points to the next node address and left side pointer points to the previous
- * node address
+ * circular queue to solve re-buffering for dequeue
+ * operation, FIFO, both front and rear pointers point
+ * to the beginnning of the array but still added to
+ * rear and deleted from front double linked list =
+ * right side pointer points to the next node address
+ * and left side pointer points to the previous node address
  *
  ***********************************************/
 
