@@ -26,11 +26,11 @@
 #include <stdlib.h>
 #include "TCB.h"
 
-//typedef struct _Queue Queue;
+typedef struct _Queue Queue;
 
 // declaration of pointers to funcions
 typedef void (*fptrNewItem)(Queue*,struct TCB_t *);
-typedef struct TCB_T* (*fptrDeleteItem)(Queue*);
+typedef struct TCB_t* (*fptrDeleteItem)(Queue*);
 typedef	void (*fptrRotateHead)(Queue*);
 typedef	void (*fptrInitQueue)(Queue*);
 typedef	void (*fptrPrintQueue)(Queue*);
@@ -55,7 +55,7 @@ typedef struct _Queue{
 // forward declaration of Queue functions
 Queue* new_Queue(); //constructor, sets pointer functions
 void Queue_NewItem(Queue* Q, struct TCB_t *new_item);
-struct TCB_T* Queue_DeleteItem(Queue* Q);
+struct TCB_t* Queue_DeleteItem(Queue* Q);
 void Queue_RotateHead(Queue* Q);
 void Queue_InitQueue(Queue* Q);
 void Queue_PrintQueue(Queue* Q);
@@ -111,13 +111,15 @@ struct TCB_t* Queue_DeleteItem(Queue* Q)
 	struct TCB_t *d_node;
 
 	d_node = Q->DelQueue(Q,Q->head);
-	Q->PrintQueue(Q);
+	//Q->PrintQueue(Q);
+
+	return d_node;
 }
 
 void Queue_RotateHead(Queue* Q)
 {
 	Q->RotateQ(Q);
-	Q->PrintQueue(Q);
+	//Q->PrintQueue(Q);
 }
 
 /*creates an empty queue, pointed to by the variable head*/
@@ -147,7 +149,7 @@ struct TCB_t* Queue_DelQueue(Queue* Q, struct TCB_t *tempHead)
 	(deleteNode->previous)->next = deleteNode->next;
 	(deleteNode->next)->previous = deleteNode->previous;
 	
-	free(deleteNode);
+	//free(deleteNode); // corrupts heap
 	Q->numElements--;
 
 	return deleteNode;
@@ -166,12 +168,12 @@ void Queue_PrintQueue(Queue* Q)
 {
 	int i;
 	struct TCB_t *temp;
-	temp = Q->head;
+	temp = RunQ->head;
 
-	//printf("Thread Head= %x\n", RunQ->head);
+	printf("Thread Head= %x\n", RunQ->head);
 
-	for (i = 0; i < Q->numElements; i++) {
-		//printf("Item %d = %x\n", i+1, temp);
+	for (i = 0; i < RunQ->numElements; i++) {
+		printf("Item %d = %x\n", i+1, temp);
 		temp = temp->next;
 	}
 }

@@ -15,13 +15,16 @@
  *
  ***********************************************/
 
-#include "threads.h"
+//#include "util.h"
+#include "sem.h"
 
 /********************
  * Gobal Variables
  ********************/
 Queue* RunQ;
 int globalInt = 0;
+
+struct Semaphore mutex;
 
 /********************
  * Function Prototypes
@@ -36,13 +39,11 @@ void (*f1)();
 void (*f2)();
 
 int main()
-{
-	struct Semaphore *mutex; //global??
-	
+{	
 	RunQ = new_Queue();
-	mutex->queue = new_Queue();
+	mutex.queue = new_Queue();
 
-	InitSem(mutex, 0); //initialize value of mutex semaphore to 0??
+	InitSem(mutex, 0);
 
 	f1 = function_f1;
 	f2 = function_f2;
@@ -56,24 +57,46 @@ int main()
 	return 0;
 }
 
-void f1()
+//Function 1 & 2 are for Method 1
+
+void function_f1()
 {
+	int f1_local = 0;
+
 	while(1) {
 		P(mutex);
+
+		printf("In F1 CS\n");
 		globalInt++;
-		printf("F1 x = %d\n", x);
+		f1_local++;
+		printf("F1 global = %d\n", globalInt);
+		printf("F1 local = %d\n", f1_local);
+		sleep(1);
+
 		V(mutex);
-		printf("F1 end x = %d\n", x);
+
+		printf("F1 out of CS\n");
+		sleep(1);
 	}
 }
 
-void f2()
+void function_f2()
 {
+	int f2_local = 0;
+
 	while(1) {
 		P(mutex);
+
+		printf("In F2 CS\n");
 		globalInt++;
-		printf("F2 x = %d\n", x);
+		f2_local++;
+		printf("F2 global = %d\n", globalInt);
+		printf("F2 local = %d\n", f2_local);
+		sleep(1);
+
 		V(mutex);
-		printf("F2 end x = %d\n", x);
+
+		printf("F2 out of CS\n");
+		sleep(1);
 	}
 }

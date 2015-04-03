@@ -17,6 +17,7 @@
 #define THREADS_H_
 
 #include <stdlib.h>
+//#include "util.h"
 #include "q.h"
 
 void start_thread(void (*function)(void));
@@ -43,7 +44,7 @@ void start_thread(void (*function)(void))
 	stack = malloc(8192); //stack is an array of 8192 ints
 
 	init_TCB(TCB, function, stack, sizeof(stack));
-	RunQ->NewItem(TCB);
+	RunQ->NewItem(RunQ, TCB);
 }
 
 void run() 
@@ -58,7 +59,7 @@ void yield() // similar to run
 	ucontext_t *thisContext, *runQContext;
 
 	thisContext = &(RunQ->head->context);
-	RunQ->RotateHead(); //rotate the run Q
+	RunQ->RotateHead(RunQ); //rotate the run Q
 	runQContext = &(RunQ->head->context);
 	swapcontext(thisContext, runQContext); //swap the context, from previous thread to the thread pointed to by RunQ
 }
