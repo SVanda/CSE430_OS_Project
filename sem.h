@@ -18,17 +18,16 @@
 
 #include "threads.h"
 
-
-struct Semaohore_t
+typedef struct Semaphore
 {
 	int count;
 	//Qtype? points to element of the queues
+	struct TCB_t *queue;
 };
 
 void InitSem(semaphore, value);
 void P(semaphore);
 void V(semaphore);
-
 
 /***********************************************
 * Initializes the value field with the specified
@@ -36,7 +35,7 @@ void V(semaphore);
  ***********************************************/
 void InitSem(semaphore, value)
 {
-	//semaphore.count = vlue
+	semaphore.count = value;
 }
 
 /***********************************************
@@ -46,12 +45,16 @@ void InitSem(semaphore, value)
  ***********************************************/
 void P(semaphore)
 {
-	//semaphore.count --
-	//if count < 0
-		//this = runq
-		//delQ
-		//addQ(semaphore.q, this)
-		//swap_context(this, runq.context);
+	ucontext_t *thisContext;
+	struct TCB_t *DelQ_return;
+
+	semaphore.count--;
+	if (semaphore.count < 0) { //block operation
+		thisContext = &(RunQ->head->context);
+		DelQ_return = RunQ->DeleteItem(RunQ); //returns the RunQ head
+		semaphore.queue->NewItem(semaphore.queue, DelQ_return); //add previous RunQ head to Sem Queue
+		swap_context(thisContext, &(RunQ->head->context));
+	}
 }
 
 /***********************************************
@@ -63,10 +66,14 @@ runnable process. //this is important.
 ***********************************************/
 void V(semaphore)
 {
-	//semaphore.count ++
-	//if count <= 0
-		//addQ(runQ,delQ(s.q));
-		//yeild()  //important
+	struct TCB_T *DelQ_return;
+
+	semaphore.count++;
+	if (semaphore.count <= 0) {
+		DelQ_return = DeleteItem(semaphore.queue); //deletes head from SemQ 
+		RunQ->NewItem(RunQ, DelQ_return); //add the SemQ head back to the RunQ (unblock)
+		yield();  //important
+	}
 }
 
 

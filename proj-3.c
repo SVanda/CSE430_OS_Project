@@ -28,18 +28,21 @@ int globalInt = 0;
  ********************/
 void function_f1();
 void function_f2();
-void function_f3();
 
 /*************************
  * Function Pointers
 ************************/
 void (*f1)();
 void (*f2)();
-void (*f3)();
 
 int main()
 {
+	struct Semaphore *mutex; //global??
+	
 	RunQ = new_Queue();
+	mutex->queue = new_Queue();
+
+	InitSem(mutex, 0); //initialize value of mutex semaphore to 0??
 
 	f1 = function_f1;
 	f2 = function_f2;
@@ -55,16 +58,22 @@ int main()
 
 void f1()
 {
-	//loop
-		//x++
-		//v(mutex)
-		//print(x)
+	while(1) {
+		P(mutex);
+		globalInt++;
+		printf("F1 x = %d\n", x);
+		V(mutex);
+		printf("F1 end x = %d\n", x);
+	}
 }
 
 void f2()
 {
-	//loop
-		//x++
-		//v(mutex)
-		//print(x)
+	while(1) {
+		P(mutex);
+		globalInt++;
+		printf("F2 x = %d\n", x);
+		V(mutex);
+		printf("F2 end x = %d\n", x);
+	}
 }
