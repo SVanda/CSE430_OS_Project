@@ -102,7 +102,7 @@ void Queue_NewItem(Queue* Q, struct TCB_t *new_item)
 	}
 
 	Q->numElements++;
-	//RunQ->PrintQueue(Q);
+	//Q->PrintQueue(Q);
 }
 
 
@@ -160,8 +160,8 @@ void Queue_RotateQ(Queue* Q)
 {
 	if (Q->numElements > 1)
 		Q->head = Q->head->next;
-	else
-		printf("No rotation!\n");
+	//else
+	//	printf("No rotation!\n");
 }
 
 void Queue_PrintQueue(Queue* Q)

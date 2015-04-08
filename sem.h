@@ -16,27 +16,25 @@
 #ifndef SEM_H_
 #define SEM_H_
 
-//#include "util.h"
 #include "threads.h"
 
-struct Semaphore
+typedef struct _Semaphore
 {
 	int count;
-	//Qtype? points to element of the queues
 	Queue* queue;
-};
+}Semaphore;
 
-void InitSem(struct Semaphore semaphore, int value);
-void P(struct Semaphore semaphore);
-void V(struct Semaphore semaphore);
+void InitSem(Semaphore* sem, int value);
+void P(Semaphore* sem);
+void V(Semaphore* sem);
 
 /***********************************************
 * Initializes the value field with the specified
 * value.
  ***********************************************/
-void InitSem(struct Semaphore semaphore, int value)
+void InitSem(Semaphore* semaphore, int value)
 {
-	semaphore.count = value;
+	semaphore->count = value;
 }
 
 /***********************************************
@@ -44,16 +42,16 @@ void InitSem(struct Semaphore semaphore, int value)
  * the value is less than zero then blocks the
  * process in the queue associated with the semaphore.
  ***********************************************/
-void P(struct Semaphore semaphore)
+void P(Semaphore* semaphore)
 {
 	ucontext_t *thisContext;
 	struct TCB_t *DelQ_return;
 
-	semaphore.count--;
-	if (semaphore.count < 0) { //block operation
+	semaphore->count--;
+	if (semaphore->count < 0) { //block operation
 		thisContext = &(RunQ->head->context);
 		DelQ_return = RunQ->DeleteItem(RunQ); //returns the RunQ head
-		semaphore.queue->NewItem(semaphore.queue, DelQ_return); //add previous RunQ head to Sem Queue
+		(semaphore->queue)->NewItem(semaphore->queue, DelQ_return); //add previous RunQ head to Sem Queue
 		swapcontext(thisContext, &(RunQ->head->context));
 	}
 }
@@ -65,13 +63,13 @@ the semaphore queue and puts it into the run queue.
 Note: The V routine also "yields" to the next
 runnable process. //this is important.
 ***********************************************/
-void V(struct Semaphore semaphore)
+void V(Semaphore* semaphore)
 {
 	struct TCB_t *DelQ_return;
 
-	semaphore.count++;
-	if (semaphore.count <= 0) {
-		DelQ_return = semaphore.queue->DeleteItem(semaphore.queue); //deletes head from SemQ 
+	semaphore->count++;
+	if (semaphore->count <= 0) {
+		DelQ_return = (semaphore->queue)->DeleteItem(semaphore->queue); //deletes head from SemQ 
 		RunQ->NewItem(RunQ, DelQ_return); //add the SemQ head back to the RunQ (unblock)
 		yield();  //important
 	}
