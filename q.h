@@ -170,10 +170,10 @@ void Queue_PrintQueue(Queue* Q)
 	struct TCB_t *temp;
 	temp = RunQ->head;
 
-	printf("Thread Head= %x\n", RunQ->head);
+	printf("Thread Head= %p\n", RunQ->head);
 
 	for (i = 0; i < RunQ->numElements; i++) {
-		printf("Item %d = %x\n", i+1, temp);
+		printf("Item %d = %p\n", i+1, temp);
 		temp = temp->next;
 	}
 }

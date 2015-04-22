@@ -71,8 +71,9 @@ void V(Semaphore* semaphore)
 	if (semaphore->count <= 0) {
 		DelQ_return = (semaphore->queue)->DeleteItem(semaphore->queue); //deletes head from SemQ 
 		RunQ->NewItem(RunQ, DelQ_return); //add the SemQ head back to the RunQ (unblock)
-		yield();  //important
 	}
+	yield();  //important
+	sleep(1);
 }
 
 
